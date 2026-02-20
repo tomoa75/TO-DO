@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="icon.png">
+
+    <link rel="apple-touch-icon" href="icon.png">
+    
+    <meta name="apple-mobile-web-app-title" content="Moj To-Do">
+    <title>TODO</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <section class ="login">
+    <h1>Please choose your profile or create new!</h1>
+
+    </section>
+   
+    <main>
+        <h2>
+      My TODO List-<span id="naslov"></span>
+      <select id="izbor">
+        <option value="trafikaPiano" selected>Trafika Piano</option>
+        <option value="tomo">Tomo</option>
+        <option value="dino">Dino</option>
+      </select>
+    </h2>
+    <div class="kontejner-za-unos">
+      <input class="unos" placeholder="Dodaj zadatak" type="text" />
+    </div>
+    <ul class="lista"></ul>
+    </main>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="script4.js"></script>
+    <script src="./Sortable.min.js"></script>
+  </body>
+</html>
