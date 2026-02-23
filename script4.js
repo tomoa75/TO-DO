@@ -30,6 +30,8 @@ const gumbDodaj = document.querySelector(".gumb-dodaj");
 const lista = document.querySelector(".lista");
 const naslov = document.getElementById("naslov");
 const izbor = document.getElementById("izbor");
+const main = document.querySelector("main");
+const profile = document.getElementById("profile");
 
 // --- FUNKCIJE ---
 function stvoriElementListe(tekst, obavljen) {
@@ -48,9 +50,29 @@ function stvoriElementListe(tekst, obavljen) {
   lista.appendChild(li);
   return li;
 }
+async function odaberiProfil() {
+  await povuciAccounte();
+  //ovde se dovacaju profili iz baze i popunjava select element
+  //nakon odabira profila, poziva se povuciIzSupabase() da se dohvate zadaci za taj profil
+ main.classList.add("noshow");
+}
 
 function osvjeziNaslov() {
   naslov.textContent = izbor.options[izbor.selectedIndex].text;
+}
+//---POVUCI ACCOUNTE IZ SUPABASE---
+async function povuciAccounte() {
+  const { data, error } = await _supabase.from("accounts").select("*");
+  if (error || !data) {
+    console.error("Greška pri povlačenju profila:", error);
+    return;
+  }
+  data.forEach((account) => {
+    const option = document.createElement("option");
+    option.value = account.id;
+    option.textContent = account.name;
+    profile.appendChild(option);
+  });
 }
 
 // --- POVUCI ZADATAKE IZ SUPABASE ---
@@ -189,6 +211,7 @@ izbor.addEventListener("change", async () => {
 // --- DOM CONTENT LOADED ---
 document.addEventListener("DOMContentLoaded", async () => {
   
+  await odaberiProfil();
   osvjeziNaslov();
   await povuciIzSupabase();
   new Sortable(lista, {
