@@ -1,47 +1,52 @@
 logInBtn.addEventListener("click", async () => {
-
   const account = profile.options[profile.selectedIndex].text; // ime
-  init(account);
- 
-})
-
-
+  const listaProfila = await dohvatiProfile(account);
+  izbor.innerHTML = ""; // očisti postojeće opcije
+  listaProfila.forEach((id) => {
+    const option = document.createElement("option");
+    option.value = id;
+    option.textContent = `Profile ${id}`;
+    izbor.appendChild(option);
+  });
+  osvjeziNaslov(account);
+  login.classList.add("noshow");
+  main.classList.remove("noshow");
+});
 
 //pomocne funkcije za dohvacanje podataka iz baze i azuriranje poretka
 async function dohvatiAccounts(account) {
-    const { data: accounts, error } = await _supabase
-  .from('accounts')
-  .select('id, name')
-  .eq('name', account)
-  .single()
+  const { data: accounts, error } = await _supabase
+    .from("accounts")
+    .select("id, name")
+    .eq("name", account)
+    .single();
 
   if (error) {
-    console.error('Error fetching accounts:', error)
-    return null
+    console.error("Error fetching accounts:", error);
+    return null;
   }
-  return accounts.id
+  return accounts.id;
 }
 
 async function dohvatiProfile(account) {
-    const selectedAccountId = await dohvatiAccounts(account)
-    if (!selectedAccountId) {
-        console.error('No account found for the given name.')
-        return null
-    }
-    const { data, error } = await _supabase
-  .from('todo_tasks')
-  .select('profile_id', { distinct: true })
-  .eq('account_id', selectedAccountId)
-  
+  const selectedAccountId = await dohvatiAccounts(account);
+  if (!selectedAccountId) {
+    console.error("No account found for the given name.");
+    return null;
+  }
+  const { data, error } = await _supabase
+    .from("todo_tasks")
+    .select("profile_id", { distinct: true })
+    .eq("account_id", selectedAccountId);
 
   if (error) {
-    console.error('Error fetching profiles:', error)
-    return null
+    console.error("Error fetching profiles:", error);
+    return null;
   }
-    return [...new Set(data.map(u => u.profile_id))]
+  return [...new Set(data.map((u) => u.profile_id))];
 }
 async function init(account) {
-  const profileIds = await dohvatiProfile(account)
-  console.log(profileIds)
+  const profileIds = await dohvatiProfile(account);
+  console.log(profileIds);
+  return profileIds;
 }
-

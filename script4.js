@@ -1,4 +1,3 @@
-
 // --- SUPABASE INICIJALIZACIJA ---
 const { createClient } = supabase;
 
@@ -6,8 +5,6 @@ const _supabase = createClient(
   "https://cftphiqouyokqspxdpmz.supabase.co",
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNmdHBoaXFvdXlva3FzcHhkcG16Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5ODg0MTQsImV4cCI6MjA4MTU2NDQxNH0.mX07DQ3lIwsxs0NJXYdYVBCh7GnOth4zJxEDhpPDxEw",
 );
-
-
 
 // --- POMOĆNA FUNKCIJA ZA BOJU GUMBA ---
 function osvjeziIzgledGumba(li) {
@@ -25,6 +22,7 @@ function osvjeziIzgledGumba(li) {
 }
 
 // --- DOM ELEMENTI ---
+const login = document.querySelector(".login");
 const unos = document.querySelector(".unos");
 const gumbDodaj = document.querySelector(".gumb-dodaj");
 const lista = document.querySelector(".lista");
@@ -57,14 +55,14 @@ async function odaberiProfil() {
   await povuciAccounte();
   //ovde se dovacaju profili iz baze i popunjava select element
   //nakon odabira profila, poziva se povuciIzSupabase() da se dohvate zadaci za taj profil
- main.classList.add("noshow");
+  main.classList.add("noshow");
 }
 async function kreirajProfil(naziv, pin) {
   const { data, error } = await _supabase
     .from("accounts")
     .insert({
       name: naziv,
-      pin_hash: pin
+      pin_hash: pin,
     })
     .select()
     .single();
@@ -80,8 +78,8 @@ async function kreirajProfil(naziv, pin) {
   profile.appendChild(option);
 }
 
-function osvjeziNaslov() {
-  naslov.textContent = izbor.options[izbor.selectedIndex].text;
+function osvjeziNaslov(account) {
+  naslov.textContent = account ? ` ${account}` : "";
 }
 //---POVUCI ACCOUNTE IZ SUPABASE---
 async function povuciAccounte() {
@@ -101,6 +99,7 @@ async function povuciAccounte() {
 // --- POVUCI ZADATAKE IZ SUPABASE ---
 async function povuciIzSupabase() {
   lista.innerHTML = "";
+
   const trenutniProfil = izbor.value;
 
   const { data, error } = await _supabase
@@ -116,22 +115,20 @@ async function povuciIzSupabase() {
 
   data.forEach((z) => {
     const li = stvoriElementListe(z.tekst, z.obavljen);
-    li.dataset.id = Number(z.id);        // 👈 int8
+    li.dataset.id = Number(z.id); // 👈 int8
     li.querySelector(".detalji").value = z.detalji || "";
     osvjeziIzgledGumba(li);
   });
 }
 
-async function updatePoredak(){
- 
-    const svi = Array.from(lista.querySelectorAll("li"));
-    for (let i = 0; i < svi.length; i++) {
-      await _supabase
-        .from("todo_tasks")
-        .update({ poredak: i })
-        .eq("id", Number(svi[i].dataset.id));
-    }
-
+async function updatePoredak() {
+  const svi = Array.from(lista.querySelectorAll("li"));
+  for (let i = 0; i < svi.length; i++) {
+    await _supabase
+      .from("todo_tasks")
+      .update({ poredak: i })
+      .eq("id", Number(svi[i].dataset.id));
+  }
 }
 
 // --- DODAJ ZADATAK ---
@@ -147,7 +144,7 @@ gumbDodaj.addEventListener("click", async () => {
       tekst: tekst,
       obavljen: false,
       detalji: "",
-      poredak: lista.children.length
+      poredak: lista.children.length,
     })
     .select()
     .single();
@@ -192,10 +189,7 @@ lista.addEventListener("click", async (e) => {
   // --- UKLANJANJE ---
   if (kliknut.classList.contains("ukloni")) {
     li.remove();
-    await _supabase
-      .from("todo_tasks")
-      .delete()
-      .eq("id", Number(li.dataset.id));
+    await _supabase.from("todo_tasks").delete().eq("id", Number(li.dataset.id));
   }
 
   // --- PREKRIŽI (CHECKBOX) ---
@@ -233,72 +227,62 @@ izbor.addEventListener("change", async () => {
 
 // --- DOM CONTENT LOADED ---
 document.addEventListener("DOMContentLoaded", async () => {
+  gumbCreateProfile.addEventListener("click", () => {
+    const newProfileName = document.getElementById("new-profile").value.trim();
+    if (!newProfileName) return;
 
-gumbCreateProfile.addEventListener("click", () => {
-  const newProfileName = document.getElementById("new-profile").value.trim();
-  if (!newProfileName) return;
+    // Kreiraj div za novi profil
+    const container = document.querySelector("#new-profile-container");
+    container.innerHTML = ""; // očisti prethodni sadržaj
 
-  // Kreiraj div za novi profil
-  const container = document.querySelector("#new-profile-container");
-  container.innerHTML = ""; // očisti prethodni sadržaj
-  
+    // Input za PIN
+    const pinInput = document.createElement("input");
+    pinInput.type = "password";
+    pinInput.placeholder = "Unesite PIN";
+    container.appendChild(pinInput);
 
-  // Input za PIN
-  const pinInput = document.createElement("input");
-  pinInput.type = "password";
-  pinInput.placeholder = "Unesite PIN";
-  container.appendChild(pinInput);
+    // Gumb za spremanje PIN-a
+    const saveBtn = document.createElement("button");
+    saveBtn.textContent = "Spremi PIN";
+    container.appendChild(saveBtn);
 
-  // Gumb za spremanje PIN-a
-  const saveBtn = document.createElement("button");
-  saveBtn.textContent = "Spremi PIN";
-  container.appendChild(saveBtn);
-
-  // Event listener za spremanje
-  saveBtn.addEventListener("click", async () => {
-    const pin = pinInput.value.trim();
-    if (!pin) {
-      alert("Unesite PIN!");
-      return;
-    }
-    await kreirajProfil(newProfileName, pin);
-    document.getElementById("new-profile").value = "";
-    container.innerHTML = "";
+    // Event listener za spremanje
+    saveBtn.addEventListener("click", async () => {
+      const pin = pinInput.value.trim();
+      if (!pin) {
+        alert("Unesite PIN!");
+        return;
+      }
+      await kreirajProfil(newProfileName, pin);
+      document.getElementById("new-profile").value = "";
+      container.innerHTML = "";
+    });
   });
 
-  
-});
-
   await odaberiProfil();
-  osvjeziNaslov();
+
   await povuciIzSupabase();
   new Sortable(lista, {
     animation: 150,
-    ghostClass: 'ghost',
-    delay: 150,                 // KLJUČNO za mobitel
-    delayOnTouchOnly: true,     // samo za touch uređaje
-    touchStartThreshold: 5,     // tolerancija pomaka prsta
-    onEnd: async () => await updatePoredak()
+    ghostClass: "ghost",
+    delay: 150, // KLJUČNO za mobitel
+    delayOnTouchOnly: true, // samo za touch uređaje
+    touchStartThreshold: 5, // tolerancija pomaka prsta
+    onEnd: async () => await updatePoredak(),
   });
-  
 });
 
 // --- (OPCIONALNO) Supabase Realtime ---
 let refreshT;
 
 _supabase
-  .channel('tasks')
+  .channel("tasks")
   .on(
-    'postgres_changes',
-    { event: '*', schema: 'public', table: 'todo_tasks' },
+    "postgres_changes",
+    { event: "*", schema: "public", table: "todo_tasks" },
     () => {
       clearTimeout(refreshT);
-      refreshT=setTimeout(povuciIzSupabase,300);
-      
-
-    }
+      refreshT = setTimeout(povuciIzSupabase, 300);
+    },
   )
   .subscribe();
-
-
-
