@@ -227,6 +227,9 @@ izbor.addEventListener("change", async () => {
 
 // --- DOM CONTENT LOADED ---
 document.addEventListener("DOMContentLoaded", async () => {
+
+  
+
   gumbCreateProfile.addEventListener("click", () => {
     const newProfileName = document.getElementById("new-profile").value.trim();
     if (!newProfileName) return;
@@ -261,7 +264,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   await odaberiProfil();
 
-  await povuciIzSupabase();
+  
   new Sortable(lista, {
     animation: 150,
     ghostClass: "ghost",

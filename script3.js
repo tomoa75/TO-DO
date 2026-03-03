@@ -2,15 +2,18 @@ logInBtn.addEventListener("click", async () => {
   const account = profile.options[profile.selectedIndex].text; // ime
   const listaProfila = await dohvatiProfile(account);
   izbor.innerHTML = ""; // očisti postojeće opcije
-  listaProfila.forEach((id) => {
+  listaProfila.forEach((id,index) => {
     const option = document.createElement("option");
     option.value = id;
     option.textContent = `Profile ${id}`;
+    if(index === 0) option.selected = true; // postavi prvu opciju kao odabranu
     izbor.appendChild(option);
   });
-  osvjeziNaslov(account);
+  
   login.classList.add("noshow");
   main.classList.remove("noshow");
+  osvjeziNaslov(account);
+  await povuciIzSupabase();
 });
 
 //pomocne funkcije za dohvacanje podataka iz baze i azuriranje poretka
