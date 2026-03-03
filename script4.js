@@ -32,6 +32,9 @@ const naslov = document.getElementById("naslov");
 const izbor = document.getElementById("izbor");
 const main = document.querySelector("main");
 const profile = document.getElementById("profile");
+const gumbCreateProfile = document.getElementById("create-profile-button");
+const newProfileInput = document.getElementById("new-profile");
+const logInBtn = document.getElementById("login-button");
 
 // --- FUNKCIJE ---
 function stvoriElementListe(tekst, obavljen) {
@@ -55,6 +58,26 @@ async function odaberiProfil() {
   //ovde se dovacaju profili iz baze i popunjava select element
   //nakon odabira profila, poziva se povuciIzSupabase() da se dohvate zadaci za taj profil
  main.classList.add("noshow");
+}
+async function kreirajProfil(naziv, pin) {
+  const { data, error } = await _supabase
+    .from("accounts")
+    .insert({
+      name: naziv,
+      pin_hash: pin
+    })
+    .select()
+    .single();
+
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  const option = document.createElement("option");
+  option.value = data.id;
+  option.textContent = data.name;
+  profile.appendChild(option);
 }
 
 function osvjeziNaslov() {
@@ -210,7 +233,42 @@ izbor.addEventListener("change", async () => {
 
 // --- DOM CONTENT LOADED ---
 document.addEventListener("DOMContentLoaded", async () => {
+
+gumbCreateProfile.addEventListener("click", () => {
+  const newProfileName = document.getElementById("new-profile").value.trim();
+  if (!newProfileName) return;
+
+  // Kreiraj div za novi profil
+  const container = document.querySelector("#new-profile-container");
+  container.innerHTML = ""; // očisti prethodni sadržaj
   
+
+  // Input za PIN
+  const pinInput = document.createElement("input");
+  pinInput.type = "password";
+  pinInput.placeholder = "Unesite PIN";
+  container.appendChild(pinInput);
+
+  // Gumb za spremanje PIN-a
+  const saveBtn = document.createElement("button");
+  saveBtn.textContent = "Spremi PIN";
+  container.appendChild(saveBtn);
+
+  // Event listener za spremanje
+  saveBtn.addEventListener("click", async () => {
+    const pin = pinInput.value.trim();
+    if (!pin) {
+      alert("Unesite PIN!");
+      return;
+    }
+    await kreirajProfil(newProfileName, pin);
+    document.getElementById("new-profile").value = "";
+    container.innerHTML = "";
+  });
+
+  
+});
+
   await odaberiProfil();
   osvjeziNaslov();
   await povuciIzSupabase();
