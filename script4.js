@@ -58,6 +58,13 @@ async function odaberiProfil() {
   main.classList.add("noshow");
 }
 async function kreirajProfil(naziv, pin) {
+  
+  const errorDiv = document.getElementById("nameError");
+
+  // reset greške prije pokušaja
+  errorDiv.textContent = "";
+  newProfileInput.classList.remove("input-error");
+
   const { data, error } = await _supabase
     .from("accounts")
     .insert({
@@ -68,14 +75,25 @@ async function kreirajProfil(naziv, pin) {
     .single();
 
   if (error) {
+    if (error.code === "23505") {
+      errorDiv.textContent = "Profil s tim imenom već postoji.";
+      newProfileInput.classList.add("input-error");
+
+      return { exists: true };
+    }
+
+    errorDiv.textContent = "Dogodila se greška. Pokušaj ponovno.";
     console.error(error);
-    return;
+    return { error: true };
   }
 
+  // ako je sve OK
   const option = document.createElement("option");
   option.value = data.id;
   option.textContent = data.name;
   profile.appendChild(option);
+
+  return { exists: false };
 }
 
 function osvjeziNaslov(account) {
