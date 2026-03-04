@@ -22,11 +22,12 @@ logInBtn.addEventListener("click", async () => {
 
 logInBtn.addEventListener("click", async () => {
   const account = profile.options[profile.selectedIndex].text; // ime
+  const listaProfila = await dohvatiProfile(account);
   console.log("Selected account:", account);
   console .log(await dohvatiAccounts(account));
-  const listaProfila = await dohvatiProfile(account);
   console.log("Fetched profile IDs:", listaProfila);
-  izbor.innerHTML = ""; // očisti postojeće opcije
+ 
+  
    // Kreiraj input za PIN i gumb za potvrdu
     const loginContainer = document.querySelector(".login-container");
     loginContainer.innerHTML = ""; // očisti prethodni sadržaj
@@ -52,7 +53,30 @@ logInBtn.addEventListener("click", async () => {
         alert("Unesite PIN!");
         return;
       }
-      console.log(await provjeriProfil(account, pin));
+      
+      const isValid = await provjeriProfil(account, pin);
+      console.log("PIN valid:", isValid);
+      if (isValid) {
+        login.classList.add("noshow");
+        main.classList.remove("noshow");
+
+        // Nakon uspješne provjere PIN-a, dohvatite profile i zadatke
+         
+         izbor.innerHTML = ""; // očisti postojeće opcije
+         listaProfila.forEach((id,index) => {
+         const option = document.createElement("option");
+         option.value = id;
+         option.textContent = `Profile ${id}`;
+         if(index === 0) option.selected = true; // postavi prvu opciju kao odabranu
+         izbor.appendChild(option);
+    });
+        osvjeziNaslov(account);
+        await povuciIzSupabase();
+      }
+       else {
+        const errorMessage = document.getElementById("nameError");
+        errorMessage.textContent = "Pogrešan PIN. Pokušajte ponovno.";
+      }
   
   });
 });
