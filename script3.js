@@ -24,7 +24,8 @@ logInBtn.addEventListener("click", async () => {
   const account = profile.options[profile.selectedIndex].text; // ime
   const listaProfila = await dohvatiProfile(account);
   console.log("Selected account:", account);
-  console .log(await dohvatiAccounts(account));
+  console .log(await dohvatiAccounts(account));// ID
+  console.log(profile.options[profile.selectedIndex].value);// ID
   console.log("Fetched profile IDs:", listaProfila);
  
   
@@ -123,8 +124,8 @@ async function dohvatiProfile(account) {
     return null;
   }
   const { data, error } = await _supabase
-    .from("todo_tasks")
-    .select("profile_id", { distinct: true })
+    .from("profiles")
+    .select("*")
     .eq("account_id", selectedAccountId);
 
   if (error) {

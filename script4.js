@@ -33,6 +33,7 @@ const profile = document.getElementById("profile");
 const gumbCreateProfile = document.getElementById("create-profile-button");
 const newProfileInput = document.getElementById("new-profile");
 const logInBtn = document.getElementById("login-button");
+const addNewProfileBtn = document.getElementById("addnewprofile");
 
 // --- FUNKCIJE ---
 function stvoriElementListe(tekst, obavljen) {
@@ -118,12 +119,13 @@ async function povuciAccounte() {
 async function povuciIzSupabase() {
   lista.innerHTML = "";
 
-  const trenutniProfil = izbor.value;
-
+  const trenutniProfil = izbor.value;// ID trenutnog profila
+  const account_id = profile.options[profile.selectedIndex].value; // ID trenutnog accounta
   const { data, error } = await _supabase
     .from("todo_tasks")
     .select("*")
     .eq("profile_id", trenutniProfil)
+    .eq("account_id", account_id)
     .order("poredak", { ascending: true });
 
   if (error || !data) {
@@ -148,6 +150,48 @@ async function updatePoredak() {
       .eq("id", Number(svi[i].dataset.id));
   }
 }
+async function dodajProfil(accountId, name) {
+  const { data, error } = await _supabase
+    .from("profiles")
+    .insert({
+      account_id: accountId,
+      name: name
+    })
+    .select()
+    .single();
+
+  
+
+  if (error) {
+    console.error(error);
+    return;
+  }
+  return data;
+}
+
+
+
+//---DODAJ MIKROPROFIL---
+addNewProfileBtn.addEventListener("click", async () => {
+  const newProfileName = prompt("Unesite naziv novog profila:");
+  if (!newProfileName) return;
+  const account = profile.options[profile.selectedIndex].text; // ime trenutnog accounta
+  
+  const account_id = await dohvatiAccounts(account); // dohvati ID accounta iz baze
+  await dodajProfil(account_id, newProfileName); // dodaj novi profil u bazu
+  const listaProfila = await dohvatiProfile(account); // dohvati sve profile za taj account
+  izbor.innerHTML = ""; // očisti postojeće opcije
+         listaProfila.forEach((id,index) => {
+         const option = document.createElement("option");
+         option.value = id;
+         option.textContent = `Profile ${id}`;
+         if(index === 0) option.selected = true; // postavi prvu opciju kao odabranu
+         izbor.appendChild(option);
+    });
+        osvjeziNaslov(account);
+        await povuciIzSupabase();
+  
+});
 
 // --- DODAJ ZADATAK ---
 gumbDodaj.addEventListener("click", async () => {
@@ -239,7 +283,7 @@ lista.addEventListener("click", async (e) => {
 
 // --- SELECT CHANGE ---
 izbor.addEventListener("change", async () => {
-  osvjeziNaslov();
+  
   await povuciIzSupabase();
 });
 
