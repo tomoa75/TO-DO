@@ -60,9 +60,11 @@ logInBtn.addEventListener("click", async () => {
       if (isValid) {
         login.classList.add("noshow");
         main.classList.remove("noshow");
+        osvjeziNaslov(account);
 
         // Nakon uspješne provjere PIN-a, dohvatite profile i zadatke
-         
+        if (listaProfila.length > 0) {
+
          izbor.innerHTML = ""; // očisti postojeće opcije
          listaProfila.forEach((id,index) => {
          const option = document.createElement("option");
@@ -70,17 +72,20 @@ logInBtn.addEventListener("click", async () => {
          option.textContent = `Profile ${id}`;
          if(index === 0) option.selected = true; // postavi prvu opciju kao odabranu
          izbor.appendChild(option);
-    });
-        osvjeziNaslov(account);
-        await povuciIzSupabase();
+        });
+          await povuciIzSupabase();
       }
-       else {
+        
+        }
+      else {
         const errorMessage = document.getElementById("nameError");
         errorMessage.textContent = "Pogrešan PIN. Pokušajte ponovno.";
       }
   
-  });
+  }
+  );
 });
+
 async function provjeriProfil(account, pin) {
   const { data, error } = await _supabase.rpc("provjeri_pin", {
   account_name: account,
@@ -132,7 +137,7 @@ async function dohvatiProfile(account) {
     console.error("Error fetching profiles:", error);
     return null;
   }
-  return [...new Set(data.map((u) => u.profile_id))];
+  return [...new Set(data.map((u) => u.name))]; // vraća jedinstvene profile
 }
 async function init(account) {
   const profileIds = await dohvatiProfile(account);

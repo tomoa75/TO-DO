@@ -1,13 +1,17 @@
 * {
   box-sizing: border-box;
 }
-
-body {
-  font-family: Verdana, Geneva, Tahoma, sans-serif;
+body{
+   font-family: Verdana, Geneva, Tahoma, sans-serif;
   background-color: lightyellow;
+
+}
+
+.login,main {
+ 
   text-align: left;
 
-  margin-left: 30%;
+  margin-left: 20%;
 }
 
 .noshow {
@@ -157,4 +161,14 @@ button.spremi.prikazi {
   ul {
     font-size: 16px; /* 10px je ipak premalo, nećemo ništa vidjeti bez povećala */
   }
+}
+footer {
+  position: fixed;
+  width: 100%;
+  bottom:0;
+  
+  background-color: rgba(255, 255, 255, 0.3);
+  text-align: center;
+  font-size: 14px;
+  color: #555;
 }
