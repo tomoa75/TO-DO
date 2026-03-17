@@ -36,6 +36,7 @@ const newProfileInput = document.getElementById("new-profile");
 const logInBtn = document.getElementById("login-button");
 const addNewProfileBtn = document.getElementById("addnewprofile");
 const logoutBtn = document.getElementById("logout-button");
+const refresh = document.getElementById("refresh");
 
 // --- FUNKCIJE ---
 function stvoriElementListe(tekst, obavljen) {
@@ -61,7 +62,6 @@ async function odaberiProfil() {
   main.classList.add("noshow");
 }
 async function kreirajProfil(naziv, pin) {
-  
   const errorDiv = document.getElementById("nameError");
 
   // reset greške prije pokušaja
@@ -122,14 +122,14 @@ async function povuciIzSupabase() {
   if (izbor.options.length === 0) return;
   lista.innerHTML = "";
 
-  const trenutniProfil = izbor.value;// ID trenutnog profila
+  const trenutniProfil = izbor.value; // ID trenutnog profila
   const account_id = profile.options[profile.selectedIndex].value; // ID trenutnog accounta
   const IDprofila = await izvuciID(account_id, trenutniProfil); // dohvati ID profila iz baze
   const { data, error } = await _supabase
     .from("tasks")
     .select("*")
     .eq("profile_id", IDprofila)
-    
+
     .order("poredak", { ascending: true });
 
   if (error || !data) {
@@ -159,12 +159,10 @@ async function dodajProfil(accountId, name) {
     .from("profiles")
     .insert({
       account_id: accountId,
-      name: name
+      name: name,
     })
     .select()
     .single();
-
-  
 
   if (error) {
     console.error(error);
@@ -186,30 +184,26 @@ async function izvuciID(accountID, name) {
   return data.id;
 }
 
-
-
 //---DODAJ MIKROPROFIL---
 
 addNewProfileBtn.addEventListener("click", async () => {
   const newProfileName = prompt("Unesite naziv novog profila:");
   if (!newProfileName) return;
   const account = profile.options[profile.selectedIndex].text; // ime trenutnog accounta
-  
+
   const account_id = await dohvatiAccounts(account); // dohvati ID accounta iz baze
   await dodajProfil(account_id, newProfileName); // dodaj novi profil u bazu
   const listaProfila = await dohvatiProfile(account); // dohvati sve profile za taj account
   izbor.innerHTML = ""; // očisti postojeće opcije
-         listaProfila.forEach((id,index) => {
-         const option = document.createElement("option");
-         option.value = id;
-         option.textContent = `Profile ${id}`;
-         if(index === 0) option.selected = true; // postavi prvu opciju kao odabranu
-         izbor.appendChild(option);
-    });
-        osvjeziNaslov(account);
-        await povuciIzSupabase();
-        
-  
+  listaProfila.forEach((id, index) => {
+    const option = document.createElement("option");
+    option.value = id;
+    option.textContent = `Profile ${id}`;
+    if (index === 0) option.selected = true; // postavi prvu opciju kao odabranu
+    izbor.appendChild(option);
+  });
+  osvjeziNaslov(account);
+  await povuciIzSupabase();
 });
 
 // --- DODAJ ZADATAK ---
@@ -221,7 +215,7 @@ gumbDodaj.addEventListener("click", async () => {
   }
   const tekst = unos.value.trim();
   if (!tekst) return;
-  const trenutniProfil = izbor.value;// ID trenutnog profila(ime profila)
+  const trenutniProfil = izbor.value; // ID trenutnog profila(ime profila)
   const account_id = profile.options[profile.selectedIndex].value; // ID trenutnog accounta
   const IDprofila = await izvuciID(account_id, trenutniProfil); // dohvati ID profila iz baze (uuid)
 
@@ -281,7 +275,7 @@ lista.addEventListener("click", async (e) => {
   // --- UKLANJANJE ---
   if (kliknut.classList.contains("ukloni")) {
     li.remove();
-    await _supabase.from("tasks").delete().eq("id",li.dataset.id);
+    await _supabase.from("tasks").delete().eq("id", li.dataset.id);
   }
 
   // --- PREKRIŽI (CHECKBOX) ---
@@ -290,7 +284,7 @@ lista.addEventListener("click", async (e) => {
     await _supabase
       .from("tasks")
       .update({ obavljen: kliknut.checked })
-      .eq("id",li.dataset.id);
+      .eq("id", li.dataset.id);
   }
 
   // --- INFO ---
@@ -307,21 +301,17 @@ lista.addEventListener("click", async (e) => {
     await _supabase
       .from("tasks")
       .update({ detalji: li.querySelector(".detalji").value })
-      .eq("id",li.dataset.id);
+      .eq("id", li.dataset.id);
   }
 });
 
 // --- SELECT CHANGE ---
 izbor.addEventListener("change", async () => {
-  
   await povuciIzSupabase();
 });
 
 // --- DOM CONTENT LOADED ---
 document.addEventListener("DOMContentLoaded", async () => {
-
-  
-
   gumbCreateProfile.addEventListener("click", () => {
     const newProfileName = document.getElementById("new-profile").value.trim();
     if (!newProfileName) return;
@@ -355,8 +345,12 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 
   await odaberiProfil();
+  filtrirajProfile();
+  refresh.addEventListener("click", () => {
+    // Osvježi stranicu da se vrati na ekran za prijavu
+    location.reload();
+  });
 
-  
   new Sortable(lista, {
     animation: 150,
     ghostClass: "ghost",

@@ -1,4 +1,39 @@
+function filtrirajProfile() {
+  const input = document.getElementById("search-profile");
+  const select = document.getElementById("profile");
 
+  // KLJUČNO: Spremamo podatke (text i value), a ne same HTML elemente.
+  // To radimo odmah pri pozivu funkcije kako bismo imali "izvornik".
+  const podaci = Array.from(select.options).map((opt) => ({
+    vrijednost: opt.value,
+    tekst: opt.text,
+  }));
+
+  input.addEventListener("input", (e) => {
+    const pismo = e.target.value.toLowerCase();
+
+    // 1. Očisti trenutni prikaz
+    select.innerHTML = "";
+
+    // 2. Filtriraj podatke iz spremljenog niza "podaci"
+    const filtrirano = podaci.filter((stavka) =>
+      stavka.tekst.toLowerCase().includes(pismo),
+    );
+
+    // 3. Ponovno izgradi <option> elemente
+    filtrirano.forEach((stavka) => {
+      const novaOpcija = new Option(stavka.tekst, stavka.vrijednost);
+      select.add(novaOpcija);
+    });
+
+    // 4. (Opcionalno) Ako želiš vizualnu povratnu informaciju kad nema rezultata
+    if (filtrirano.length === 0) {
+      const prazno = new Option("Nema pronađenih profila", "");
+      prazno.disabled = true;
+      select.add(prazno);
+    }
+  });
+}
 
 /*
 logInBtn.addEventListener("click", async () => {
@@ -24,88 +59,79 @@ logInBtn.addEventListener("click", async () => {
   const account = profile.options[profile.selectedIndex].text; // ime
   const listaProfila = await dohvatiProfile(account);
   console.log("Selected account:", account);
-  console .log(await dohvatiAccounts(account));// ID
-  console.log(profile.options[profile.selectedIndex].value);// ID
+  console.log(await dohvatiAccounts(account)); // ID
+  console.log(profile.options[profile.selectedIndex].value); // ID
   console.log("Fetched profile IDs:", listaProfila);
- 
-  
-   // Kreiraj input za PIN i gumb za potvrdu
-    const loginContainer = document.querySelector(".login-container");
-    loginContainer.innerHTML = ""; // očisti prethodni sadržaj
-   
 
-    // Input za PIN
-    const pinInput = document.createElement("input");
-    pinInput.type = "password";
-    pinInput.placeholder = "Unesite PIN";
-    loginContainer.appendChild(pinInput);
-    
+  // Kreiraj input za PIN i gumb za potvrdu
+  const loginContainer = document.querySelector(".login-container");
+  loginContainer.innerHTML = ""; // očisti prethodni sadržaj
 
-    // Gumb za spremanje PIN-a
-    const checkBtn = document.createElement("button");
-    checkBtn.textContent = "Provjeri PIN";
-    loginContainer.appendChild(checkBtn);
-    
+  // Input za PIN
+  const pinInput = document.createElement("input");
+  pinInput.type = "password";
+  pinInput.placeholder = "Unesite PIN";
+  loginContainer.appendChild(pinInput);
 
-    // Event listener za spremanje
-    checkBtn.addEventListener("click", async () => {
-      const pin = pinInput.value.trim();
-      if (!pin) {
-        alert("Unesite PIN!");
-        return;
-      }
-      
-      const isValid = await provjeriProfil(account, pin);
-      console.log("PIN valid:", isValid);
-      if (isValid) {
-        login.classList.add("noshow");
-        main.classList.remove("noshow");
-        osvjeziNaslov(account);
+  // Gumb za spremanje PIN-a
+  const checkBtn = document.createElement("button");
+  checkBtn.textContent = "Provjeri PIN";
+  loginContainer.appendChild(checkBtn);
 
-        // Nakon uspješne provjere PIN-a, dohvatite profile i zadatke
-        if (listaProfila.length > 0) {
+  // Event listener za spremanje
+  checkBtn.addEventListener("click", async () => {
+    const pin = pinInput.value.trim();
+    if (!pin) {
+      alert("Unesite PIN!");
+      return;
+    }
 
-         izbor.innerHTML = ""; // očisti postojeće opcije
-         listaProfila.forEach((id,index) => {
-         const option = document.createElement("option");
-         option.value = id;
-         option.textContent = `Profile ${id}`;
-         if(index === 0) option.selected = true; // postavi prvu opciju kao odabranu
-         izbor.appendChild(option);
+    const isValid = await provjeriProfil(account, pin);
+    console.log("PIN valid:", isValid);
+    if (isValid) {
+      login.classList.add("noshow");
+      main.classList.remove("noshow");
+      osvjeziNaslov(account);
+
+      // Nakon uspješne provjere PIN-a, dohvatite profile i zadatke
+      if (listaProfila.length > 0) {
+        izbor.innerHTML = ""; // očisti postojeće opcije
+        listaProfila.forEach((id, index) => {
+          const option = document.createElement("option");
+          option.value = id;
+          option.textContent = `Profile ${id}`;
+          if (index === 0) option.selected = true; // postavi prvu opciju kao odabranu
+          izbor.appendChild(option);
         });
-          await povuciIzSupabase();
+        await povuciIzSupabase();
       }
-        
-        }
-      else {
-        const errorMessage = document.getElementById("nameError");
-        errorMessage.textContent = "Pogrešan PIN. Pokušajte ponovno.";
-      }
-  
-  }
-  );
+    } else {
+      const errorMessage = document.getElementById("nameError");
+      errorMessage.textContent = "Pogrešan PIN. Pokušajte ponovno.";
+    }
+  });
 });
 
 async function provjeriProfil(account, pin) {
   const { data, error } = await _supabase.rpc("provjeri_pin", {
-  account_name: account,
-  plain_pin: pin
-});
+    account_name: account,
+    plain_pin: pin,
+  });
   if (error) {
     console.error("Greška prilikom provjere PIN-a:", error);
     return;
   }
 
-if (data) {
-  console.log("Login uspješan ✅");
-  return true;
-} else {
-  console.log("PIN nije točan ❌");
-  return false;
+  if (data) {
+    console.log("Login uspješan ✅");
+    return true;
+  } else {
+    console.log("PIN nije točan ❌");
+    return false;
+  }
+
+  // ovdje nastavljaš flow, npr. prikaz TODO liste
 }
-  
-    // ovdje nastavljaš flow, npr. prikaz TODO liste
-  };
 
 //pomocne funkcije za dohvacanje podataka iz baze i azuriranje poretka
 async function dohvatiAccounts(account) {
