@@ -35,26 +35,46 @@ function filtrirajProfile() {
   });
 }
 
-/*
-logInBtn.addEventListener("click", async () => {
-  const account = profile.options[profile.selectedIndex].text; // ime
-  const listaProfila = await dohvatiProfile(account);
-  izbor.innerHTML = ""; // očisti postojeće opcije
-  listaProfila.forEach((id,index) => {
-    const option = document.createElement("option");
-    option.value = id;
-    option.textContent = `Profile ${id}`;
-    if(index === 0) option.selected = true; // postavi prvu opciju kao odabranu
-    izbor.appendChild(option);
-  });
-  
-  login.classList.add("noshow");
-  main.classList.remove("noshow");
-  osvjeziNaslov(account);
-  await povuciIzSupabase();
-});
-*/
+async function provjeriKljuc() {
+  const regKeyInput = document.getElementById("reg-key");
+  const verifyBtn = document.getElementById("verifyKeyBtn");
+  const accountFields = document.getElementById("new-profile-container");
+  const inputs = accountFields.querySelectorAll("input,button");
 
+  verifyBtn.addEventListener("click", async () => {
+    const key = regKeyInput.value.trim();
+    if (!key) return alert("Unesite ključ!");
+
+    verifyBtn.disabled = true;
+    verifyBtn.textContent = "Provjera...";
+
+    // Pozivamo bazu da provjeri i IZBRIŠE ključ
+    const { data: isValid, error } = await _supabase.rpc(
+      "use_registration_key",
+      { input_key: key },
+    );
+
+    if (error || !isValid) {
+      alert("Ključ nije ispravan ili je već iskorišten!");
+      verifyBtn.disabled = false;
+      verifyBtn.textContent = "Provjeri ključ";
+      return;
+    }
+
+    // USPJEH: Otključavamo polja
+    alert("Ključ prihvaćen! Sada možete kreirati profil.");
+
+    regKeyInput.disabled = true; // Zaključaj polje za ključ jer je već obrisan
+    verifyBtn.style.display = "none"; // Sakrij gumb za provjeru
+
+    // Vizualno "prosvijetli" polja i omogući unos
+    accountFields.style.opacity = "1";
+    accountFields.style.pointer_events = "auto";
+    inputs.forEach((el) => (el.disabled = false));
+
+    document.getElementById("new-profile").focus(); // Autofokus na ime
+  });
+}
 logInBtn.addEventListener("click", async () => {
   const account = profile.options[profile.selectedIndex].text; // ime
   const listaProfila = await dohvatiProfile(account);
@@ -72,6 +92,7 @@ logInBtn.addEventListener("click", async () => {
   pinInput.type = "password";
   pinInput.placeholder = "Unesite PIN";
   loginContainer.appendChild(pinInput);
+  pinInput.focus();
 
   // Gumb za spremanje PIN-a
   const checkBtn = document.createElement("button");
@@ -105,6 +126,71 @@ logInBtn.addEventListener("click", async () => {
         });
         await povuciIzSupabase();
       }
+    } else {
+      const errorMessage = document.getElementById("nameError");
+      errorMessage.textContent = "Pogrešan PIN. Pokušajte ponovno.";
+    }
+  });
+});
+
+deleteProfile.addEventListener("click", async () => {
+  const account = profile.options[profile.selectedIndex].text; // ime
+
+  console.log("Selected account for erase:", account);
+  console.log(await dohvatiAccounts(account)); // ID
+
+  // Kreiraj input za PIN i gumb za potvrdu
+  const loginContainer = document.querySelector(".login-container");
+  loginContainer.innerHTML = ""; // očisti prethodni sadržaj
+
+  // Input za PIN
+  const pinInput = document.createElement("input");
+  pinInput.type = "password";
+  pinInput.placeholder = "Unesite PIN profila za brisanje";
+  loginContainer.appendChild(pinInput);
+  pinInput.focus();
+
+  // Gumb za spremanje PIN-a
+  const checkBtn = document.createElement("button");
+  checkBtn.textContent = "Provjeri PIN";
+  loginContainer.appendChild(checkBtn);
+
+  // Event listener za spremanje
+  checkBtn.addEventListener("click", async () => {
+    const pin = pinInput.value.trim();
+    if (!pin) {
+      alert("Unesite PIN!");
+      return;
+    }
+
+    const isValid = await provjeriProfil(account, pin);
+    const accountId = await dohvatiAccounts(account);
+    console.log("PIN valid:", isValid);
+    if (isValid) {
+      const potvrda = confirm(
+        `PIN ok,Dali ste sigurni da želite izbrisati profil ${account}?`,
+      );
+      if (potvrda) {
+        console.log(`pokrecemo brisanje accounta ${account}`);
+        // Brisanje samo iz glavne tablice 'accounts'
+        const { error } = await _supabase
+          .from("accounts")
+          .delete()
+          .eq("id", accountId);
+
+        if (error) {
+          console.error("Greška:", error.message);
+        } else {
+          alert("Sve je uspješno obrisano.");
+          // Ovdje očisti session i preusmjeri korisnika
+          location.reload();
+        }
+      } else {
+        console.log("refresh page");
+        location.reload();
+      }
+
+      // Nakon uspješne provjere PIN-a, brisemo profil u supabase
     } else {
       const errorMessage = document.getElementById("nameError");
       errorMessage.textContent = "Pogrešan PIN. Pokušajte ponovno.";

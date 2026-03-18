@@ -37,6 +37,7 @@ const logInBtn = document.getElementById("login-button");
 const addNewProfileBtn = document.getElementById("addnewprofile");
 const logoutBtn = document.getElementById("logout-button");
 const refresh = document.getElementById("refresh");
+const deleteProfile = document.getElementById("delete-profile");
 
 // --- FUNKCIJE ---
 function stvoriElementListe(tekst, obavljen) {
@@ -345,6 +346,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 
   await odaberiProfil();
+  await provjeriKljuc();
   filtrirajProfile();
   refresh.addEventListener("click", () => {
     // Osvježi stranicu da se vrati na ekran za prijavu

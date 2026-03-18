@@ -1,14 +1,13 @@
 * {
   box-sizing: border-box;
 }
-body{
-   font-family: Verdana, Geneva, Tahoma, sans-serif;
+body {
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
   background-color: lightyellow;
-
 }
 
-.login,main {
- 
+.login,
+main {
   text-align: left;
 
   margin-left: 20%;
@@ -25,16 +24,13 @@ body{
   min-height: 18px;
 }
 
-
-
-
 input[type="text"] {
   border: 2px solid orange;
   border-radius: 5px;
   padding: 5px;
   font-size: 26px;
   max-width: 100%; /* Ovo sprječava da pobjegne van ekrana */
-  width: auto;     /* Ili postavi fiksno tipa 300px ako želiš */
+  width: auto; /* Ili postavi fiksno tipa 300px ako želiš */
 }
 
 input[type="checkbox"] {
@@ -43,6 +39,7 @@ input[type="checkbox"] {
   cursor: pointer;
   vertical-align: middle;
 }
+/* Uklanjanje zadanog plavog okvira */
 
 button {
   background-color: orange;
@@ -54,19 +51,22 @@ button {
   cursor: pointer;
   transition: 0.3s; /* Lagani prijelaz kad klikneš */
 }
-button.gore,button.dolje{
+button.gore,
+button.dolje {
   background-color: rgb(80, 81, 79);
   color: white;
   padding: 2px 6px;
   width: 40px;
-  
 }
-button.gumb-dodaj{
+button.gumb-dodaj {
   background-color: brown;
 }
 
 button:hover {
   filter: brightness(0.9); /* Malo potamni kad prođeš mišem */
+}
+button#delete-profile {
+  margin: 1rem;
 }
 
 ul {
@@ -105,10 +105,9 @@ button.spremi.prikazi {
 }
 
 .tekst {
-  
   overflow-wrap: break-word;
-  
-  max-width: 60%;            /* Sprječava da tekst "izgura" gumbe X i Info */
+
+  max-width: 60%; /* Sprječava da tekst "izgura" gumbe X i Info */
   vertical-align: middle;
   line-height: 1.2;
 }
@@ -122,12 +121,12 @@ button.spremi.prikazi {
 
 /* Sakrij strelicu GORE na prvom zadatku u listi */
 .lista li:first-child .gore {
-    display: none;
+  display: none;
 }
 
 /* Sakrij strelicu DOLJE na zadnjem zadatku u listi */
 .lista li:last-child .dolje {
-    display: none;
+  display: none;
 }
 
 @media (max-width: 800px) {
@@ -136,22 +135,23 @@ button.spremi.prikazi {
     padding: 10px; /* Da tekst ne udara u rubove ekrana */
   }
 
-
   .detalji {
     width: 100%;
     box-sizing: border-box; /* Da padding ne raširi textarea van ekrana */
   }
 
-  input[type="text"], select{
+  input[type="text"],
+  select {
     font-size: 16px; /* Lakše za tipkanje na mobitelu */
-    width: 100%;    /* Na mobitelu je bolje da su gumbi jedan ispod drugog */
+    width: 100%; /* Na mobitelu je bolje da su gumbi jedan ispod drugog */
     margin-bottom: 10px;
   }
   .tekst::after {
-    content:"\A";
+    content: "\A";
     white-space: pre;
   }
-    button.info,button.ukloni{
+  button.info,
+  button.ukloni {
     display: inline-block;
     font-size: 20px;
     width: 49%;
@@ -165,8 +165,8 @@ button.spremi.prikazi {
 footer {
   position: fixed;
   width: 100%;
-  bottom:0;
-  
+  bottom: 0;
+
   background-color: rgba(255, 255, 255, 0.3);
   text-align: center;
   font-size: 14px;
