@@ -68,9 +68,7 @@ async function provjeriKljuc() {
     verifyBtn.style.display = "none"; // Sakrij gumb za provjeru
 
     // Vizualno "prosvijetli" polja i omogući unos
-    accountFields.style.opacity = "1";
-    accountFields.style.pointer_events = "auto";
-    inputs.forEach((el) => (el.disabled = false));
+    accountFields.classList.remove("disabled");
 
     document.getElementById("new-profile").focus(); // Autofokus na ime
   });

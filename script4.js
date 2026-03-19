@@ -63,11 +63,7 @@ async function odaberiProfil() {
   main.classList.add("noshow");
 }
 async function kreirajProfil(naziv, pin) {
-  const errorDiv = document.getElementById("nameError");
-
   // reset greške prije pokušaja
-  errorDiv.textContent = "";
-  newProfileInput.classList.remove("input-error");
 
   const { data, error } = await _supabase
     .from("accounts")
@@ -80,13 +76,13 @@ async function kreirajProfil(naziv, pin) {
 
   if (error) {
     if (error.code === "23505") {
-      errorDiv.textContent = "Profil s tim imenom već postoji.";
-      newProfileInput.classList.add("input-error");
+      alert("Profil s tim imenom već postoji.");
+      location.reload();
 
       return { exists: true };
     }
 
-    errorDiv.textContent = "Dogodila se greška. Pokušaj ponovno.";
+    alert("Dogodila se greška. Pokušaj ponovno.");
     console.error(error);
     return { error: true };
   }
@@ -96,7 +92,8 @@ async function kreirajProfil(naziv, pin) {
   option.value = data.id;
   option.textContent = data.name;
   profile.appendChild(option);
-
+  alert("Profil uspješno dodan!");
+  location.reload();
   return { exists: false };
 }
 
@@ -324,7 +321,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Input za PIN
     const pinInput = document.createElement("input");
     pinInput.type = "password";
-    pinInput.placeholder = "Unesite PIN";
+    pinInput.placeholder = `Unesite PIN za ${newProfileName}`;
+    pinInput.autofocus = true;
     container.appendChild(pinInput);
 
     // Gumb za spremanje PIN-a
@@ -340,8 +338,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         return;
       }
       await kreirajProfil(newProfileName, pin);
-      document.getElementById("new-profile").value = "";
-      container.innerHTML = "";
     });
   });
 

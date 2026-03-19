@@ -16,6 +16,10 @@ main {
 .noshow {
   display: none;
 }
+.disabled {
+  pointer-events: none;
+  opacity: 0.5;
+}
 
 .error-message {
   color: #e74c3c;
