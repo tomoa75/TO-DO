@@ -1,16 +1,22 @@
 * {
   box-sizing: border-box;
+  outline: 1px solid red !important;
 }
 body {
   font-family: Verdana, Geneva, Tahoma, sans-serif;
   background-color: lightyellow;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
 }
 
 .login,
 main {
-  text-align: left;
+  text-align: center;
+  flex: 2;
 
-  margin-left: 20%;
+  overflow-y: auto;
 }
 
 .noshow {
@@ -167,9 +173,7 @@ button.spremi.prikazi {
   }
 }
 footer {
-  position: fixed;
   width: 100%;
-  bottom: 0;
 
   background-color: rgba(255, 255, 255, 0.3);
   text-align: center;

@@ -88,7 +88,7 @@ logInBtn.addEventListener("click", async () => {
   // Input za PIN
   const pinInput = document.createElement("input");
   pinInput.type = "password";
-  pinInput.placeholder = "Unesite PIN";
+  pinInput.placeholder = `Unesite PIN ${account}`;
   loginContainer.appendChild(pinInput);
   pinInput.focus();
 
@@ -100,6 +100,7 @@ logInBtn.addEventListener("click", async () => {
   // Event listener za spremanje
   checkBtn.addEventListener("click", async () => {
     const pin = pinInput.value.trim();
+    pinInput.value = "";
     if (!pin) {
       alert("Unesite PIN!");
       return;
@@ -125,8 +126,8 @@ logInBtn.addEventListener("click", async () => {
         await povuciIzSupabase();
       }
     } else {
-      const errorMessage = document.getElementById("nameError");
-      errorMessage.textContent = "Pogrešan PIN. Pokušajte ponovno.";
+      pinInput.focus();
+      alert("Pogrešan PIN. Pokušajte ponovno.");
     }
   });
 });
