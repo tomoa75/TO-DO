@@ -13,7 +13,7 @@ function osvjeziIzgledGumba(li) {
   if (textarea.value.trim() !== "") {
     infoGumb.style.backgroundColor = "red";
     infoGumb.style.color = "white";
-    infoGumb.textContent = "Detalji";
+    infoGumb.textContent = "Details";
   } else {
     infoGumb.style.backgroundColor = "";
     infoGumb.style.color = "";
@@ -50,8 +50,8 @@ function stvoriElementListe(tekst, obavljen) {
     <span class="tekst">${tekst}</span>
     <button class="ukloni" type="button">X</button>
     <button class="info" type="button">Info</button>
-    <textarea class="detalji" placeholder="Unesite dodatne detalje..." rows="5" cols="45"></textarea>
-    <button class="spremi" type="button">Spremi</button>
+    <textarea class="detalji" placeholder="Add details..." rows="5" cols="45"></textarea>
+    <button class="spremi" type="button">Save</button>
   `;
   lista.appendChild(li);
   return li;
@@ -76,13 +76,13 @@ async function kreirajProfil(naziv, pin) {
 
   if (error) {
     if (error.code === "23505") {
-      alert("Profil s tim imenom već postoji.");
+      alert("Profile with given name already exists.");
       location.reload();
 
       return { exists: true };
     }
 
-    alert("Dogodila se greška. Pokušaj ponovno.");
+    alert("Error happened.Try again.");
     console.error(error);
     return { error: true };
   }
@@ -92,7 +92,7 @@ async function kreirajProfil(naziv, pin) {
   option.value = data.id;
   option.textContent = data.name;
   profile.appendChild(option);
-  alert("Profil uspješno dodan!");
+  alert("Profile successfully added!");
   location.reload();
   return { exists: false };
 }
@@ -104,7 +104,7 @@ function osvjeziNaslov(account) {
 async function povuciAccounte() {
   const { data, error } = await _supabase.from("accounts").select("*");
   if (error || !data) {
-    console.error("Greška pri povlačenju profila:", error);
+    console.error("Error catching profiles:", error);
     return;
   }
   data.forEach((account) => {
@@ -131,7 +131,7 @@ async function povuciIzSupabase() {
     .order("poredak", { ascending: true });
 
   if (error || !data) {
-    console.error("Greška pri povlačenju:", error);
+    console.error("Eroor happened:", error);
     return;
   }
 
@@ -185,7 +185,7 @@ async function izvuciID(accountID, name) {
 //---DODAJ MIKROPROFIL---
 
 addNewProfileBtn.addEventListener("click", async () => {
-  const newProfileName = prompt("Unesite naziv novog profila:");
+  const newProfileName = prompt("Enter name of new user:");
   if (!newProfileName) return;
   const account = profile.options[profile.selectedIndex].text; // ime trenutnog accounta
 
@@ -196,7 +196,7 @@ addNewProfileBtn.addEventListener("click", async () => {
   listaProfila.forEach((id, index) => {
     const option = document.createElement("option");
     option.value = id;
-    option.textContent = `Profile ${id}`;
+    option.textContent = `User ${id}`;
     if (index === 0) option.selected = true; // postavi prvu opciju kao odabranu
     izbor.appendChild(option);
   });
@@ -208,7 +208,7 @@ addNewProfileBtn.addEventListener("click", async () => {
 
 gumbDodaj.addEventListener("click", async () => {
   if (!izbor.value) {
-    alert("Molim, prvo odaberite ili kreirajte profil!");
+    alert("Please ,first choose or create user!");
     return;
   }
   const tekst = unos.value.trim();
@@ -321,20 +321,20 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Input za PIN
     const pinInput = document.createElement("input");
     pinInput.type = "password";
-    pinInput.placeholder = `Unesite PIN za ${newProfileName}`;
+    pinInput.placeholder = `Enter PIN for ${newProfileName}`;
     pinInput.autofocus = true;
     container.appendChild(pinInput);
 
     // Gumb za spremanje PIN-a
     const saveBtn = document.createElement("button");
-    saveBtn.textContent = "Spremi PIN";
+    saveBtn.textContent = "Save PIN";
     container.appendChild(saveBtn);
 
     // Event listener za spremanje
     saveBtn.addEventListener("click", async () => {
       const pin = pinInput.value.trim();
       if (!pin) {
-        alert("Unesite PIN!");
+        alert("Enter PIN!");
         return;
       }
       await kreirajProfil(newProfileName, pin);
