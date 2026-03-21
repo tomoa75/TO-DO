@@ -1,14 +1,32 @@
 * {
   box-sizing: border-box;
-  outline: 1px solid red !important;
 }
 body {
   font-family: Verdana, Geneva, Tahoma, sans-serif;
   background-color: lightyellow;
+
   display: flex;
   flex-direction: column;
   height: 100vh;
   overflow: hidden;
+}
+body::before {
+  content: "";
+  position: fixed; /* Slika ostaje fiksna */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
+  background-image: url("./icon.png");
+  background-size: contain;
+
+  /* prozirnost cijele slike */
+  opacity: 0.1;
+  z-index: -1;
+}
+.title {
+  font-size: 3rem;
 }
 
 .login,
@@ -18,6 +36,12 @@ main {
 
   overflow-y: auto;
 }
+.login-container {
+  font-size: 2rem;
+}
+select {
+  font-size: 2rem;
+}
 
 .noshow {
   display: none;
@@ -26,15 +50,8 @@ main {
   pointer-events: none;
   opacity: 0.5;
 }
-
-.error-message {
-  color: #e74c3c;
-
-  margin-top: 4px;
-  min-height: 18px;
-}
-
-input[type="text"] {
+input[type="text"],
+input[type="password"] {
   border: 2px solid orange;
   border-radius: 5px;
   padding: 5px;
@@ -78,6 +95,9 @@ button:hover {
 button#delete-profile {
   margin: 1rem;
 }
+button#verifyKeyBtn {
+  margin: 6px;
+}
 
 ul {
   list-style-type: none;
@@ -85,14 +105,9 @@ ul {
   font-size: 22px;
 }
 
-select {
-  font-size: 24px;
-  margin-left: 10px;
-}
-
 textarea {
   display: none;
-  margin-top: 10px;
+  margin: 0 auto;
   font-size: 18px;
   padding: 10px;
   border: 2px solid red;
@@ -127,6 +142,7 @@ button.spremi.prikazi {
 }
 .lista li {
   touch-action: manipulation;
+  margin-bottom: 5px;
 }
 
 /* Sakrij strelicu GORE na prvom zadatku u listi */

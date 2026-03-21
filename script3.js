@@ -39,7 +39,6 @@ async function provjeriKljuc() {
   const regKeyInput = document.getElementById("reg-key");
   const verifyBtn = document.getElementById("verifyKeyBtn");
   const accountFields = document.getElementById("new-profile-container");
-  const inputs = accountFields.querySelectorAll("input,button");
 
   verifyBtn.addEventListener("click", async () => {
     const key = regKeyInput.value.trim();
@@ -58,6 +57,7 @@ async function provjeriKljuc() {
       alert("Ključ nije ispravan ili je već iskorišten!");
       verifyBtn.disabled = false;
       verifyBtn.textContent = "Provjeri ključ";
+      regKeyInput.value = "";
       return;
     }
 
@@ -94,8 +94,9 @@ logInBtn.addEventListener("click", async () => {
 
   // Gumb za spremanje PIN-a
   const checkBtn = document.createElement("button");
-  checkBtn.textContent = "Provjeri PIN";
+  checkBtn.textContent = "Log In";
   loginContainer.appendChild(checkBtn);
+  checkBtn.style.margin = "6px";
 
   // Event listener za spremanje
   checkBtn.addEventListener("click", async () => {

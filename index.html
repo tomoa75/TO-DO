@@ -13,9 +13,10 @@
   </head>
   <body>
     <section class="login">
-      <h1>Please choose your profile or create new!</h1>
+      <h1 class="title">My To-Do</h1>
+      <h1>Please select your profile or create new!</h1>
       <div class="login-container">
-        <label for="profile">Choose profile:</label>
+        <label for="profile">Select profile</label>
 
         <select id="profile" name="profile">
           <!-- OVDJE ĆE SE DODAVATI accounti IZ SUPABASE -->
@@ -25,25 +26,21 @@
       </div>
       <br /><br />
       <div id="new-profile-container" class="disabled">
-        <label for="new-profile">Create new profile:</label>
+        <label for="new-profile">Create new profile</label>
         <input id="new-profile" placeholder="New profile name" type="text" />
 
         <button id="create-profile-button" type="button">Create Profile</button>
       </div>
       <br /><br />
-      <label for="reg-key">Unlock create New profile</label>
+      <label for="reg-key">Unlock create new profile</label>
       <input id="reg-key" placeholder="Enter secret code" type="text" /><button
         id="verifyKeyBtn"
       >
         Unlock acc</button
-      ><br /><br />
+      ><br /><br /><br />
 
-      <label for="search-profile">Search profile:</label>
-      <input
-        id="search-profile"
-        placeholder="Enter few characters of profile name"
-        type="text"
-      />
+      <label for="search-profile">Search profile</label>
+      <input id="search-profile" placeholder="Enter few letters" type="text" />
       <button id="refresh" type="button">Reload app</button>
     </section>
 
@@ -62,9 +59,10 @@
       </div>
       <ul class="lista"></ul>
     </main>
+
     <footer>
       <p>
-        Copyright © 2026 Moj To-Do by Tomislav Moranduzzo. All rights reserved.
+        Copyright © 2026 My To-Do by Tomislav Moranduzzo. All rights reserved.
       </p>
     </footer>
 
