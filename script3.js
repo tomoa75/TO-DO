@@ -80,6 +80,7 @@ logInBtn.addEventListener("click", async () => {
   console.log(await dohvatiAccounts(account)); // ID
   console.log(profile.options[profile.selectedIndex].value); // ID
   console.log("Fetched profile IDs:", listaProfila);
+  footer.classList.add("noshowmobile");
 
   // Kreiraj input za PIN i gumb za potvrdu
   const loginContainer = document.querySelector(".login-container");

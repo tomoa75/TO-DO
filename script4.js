@@ -38,6 +38,7 @@ const addNewProfileBtn = document.getElementById("addnewprofile");
 const logoutBtn = document.getElementById("logout-button");
 const refresh = document.getElementById("refresh");
 const deleteProfile = document.getElementById("delete-profile");
+const footer = document.querySelector("footer");
 
 // --- FUNKCIJE ---
 function stvoriElementListe(tekst, obavljen) {

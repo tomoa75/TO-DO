@@ -66,7 +66,10 @@ input[type="checkbox"] {
   cursor: pointer;
   vertical-align: middle;
 }
-/* Uklanjanje zadanog plavog okvira */
+input:focus {
+  outline: none;
+  border-color: orange;
+}
 
 button {
   background-color: orange;
@@ -154,11 +157,33 @@ button.spremi.prikazi {
 .lista li:last-child .dolje {
   display: none;
 }
+footer {
+  width: 100%;
+
+  background-color: rgba(255, 255, 255, 0.3);
+  text-align: center;
+  font-size: 14px;
+  color: #555;
+}
+.noshowmobile {
+  opacity: 1;
+}
 
 @media (max-width: 800px) {
   body {
     margin-left: 0;
     padding: 10px; /* Da tekst ne udara u rubove ekrana */
+  }
+  .noshowmobile {
+    display: none;
+  }
+  input:focus {
+    border-color: orange;
+    font-size: 1rem;
+  }
+  button {
+    font-size: 1rem;
+    padding: 6px 10px;
   }
 
   .detalji {
@@ -187,12 +212,4 @@ button.spremi.prikazi {
   ul {
     font-size: 16px; /* 10px je ipak premalo, nećemo ništa vidjeti bez povećala */
   }
-}
-footer {
-  width: 100%;
-
-  background-color: rgba(255, 255, 255, 0.3);
-  text-align: center;
-  font-size: 14px;
-  color: #555;
 }
